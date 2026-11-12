@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ТехноТочка — Магазин оргтехники</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="phone-frame">
+  <div class="status-bar">
+    <span>9:41</span>
+    <span>📶 🛜 🔋</span>
+  </div>
+
+  <div class="screen-container">
+    <div id="screen-home" class="screen active">
+      <div class="home-header">
+        <div class="logo">техно<span>точка</span></div>
+        <div class="header-meta">
+          <span>📍 Москва</span>
+          <span>🔔</span>
+        </div>
+      </div>
+
+      <div class="search-box">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="text" placeholder="Найти технику для работы" oninput="handleSearch(this.value)" />
+      </div>
+
+      <div class="hero-banner">
+        <div class="hero-content">
+          <span class="hero-badge">Подборка к новому сезону</span>
+          <div class="hero-title">Техника для больших идей</div>
+          <div class="hero-sub">До −25% на рабочие станции и печать</div>
+          <button class="btn-dark" onclick="switchScreen('catalog')">Смотреть подборку</button>
+        </div>
+        <div class="hero-illustration">🖨️</div>
+      </div>
+
+      <div class="section-head">
+        <div class="section-title">Категории</div>
+        <div class="section-link" onclick="switchScreen('catalog')">Все</div>
+      </div>
+
+      <div class="categories-grid">
+        <div class="cat-item" onclick="filterAndOpenCatalog('Принтеры')">
+          <div class="cat-icon">🖨️</div>
+          <div class="cat-name">Принтеры</div>
+        </div>
+        <div class="cat-item" onclick="filterAndOpenCatalog('Мониторы')">
+          <div class="cat-icon">🖥️</div>
+          <div class="cat-name">Мониторы</div>
+        </div>
+        <div class="cat-item" onclick="filterAndOpenCatalog('Ноутбуки')">
+          <div class="cat-icon">💻</div>
+          <div class="cat-name">Ноутбуки</div>
+        </div>
+        <div class="cat-item" onclick="filterAndOpenCatalog('Картриджи')">
+          <div class="cat-icon">🧴</div>
+          <div class="cat-name">Картриджи</div>
+        </div>
+      </div>
+
+      <div class="section-head">
+        <div class="section-title">Хиты продаж</div>
+        <div class="section-link" onclick="switchScreen('catalog')">Все</div>
+      </div>
+
+      <div class="products-grid" id="home-hits-grid"></div>
+    </div>
+
+    <div id="screen-catalog" class="screen">
+      <div class="catalog-header">
+        <div class="page-title">Каталог</div>
+        <div class="items-count" id="catalog-count">8 товаров</div>
+      </div>
+
+      <div class="search-box">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="text" id="catalog-search-input" placeholder="Название или артикул" oninput="renderCatalog()" />
+      </div>
+
+      <div class="chips-row" id="category-chips">
+        <button class="chip active" onclick="selectCategory('Все', this)">Все</button>
+        <button class="chip" onclick="selectCategory('Принтеры', this)">Принтеры</button>
+        <button class="chip" onclick="selectCategory('Мониторы', this)">Мониторы</button>
+        <button class="chip" onclick="selectCategory('Ноутбуки', this)">Ноутбуки</button>
+        <button class="chip" onclick="selectCategory('Картриджи', this)">Картриджи</button>
+      </div>
+
+      <div class="sort-bar">
+        <span>По популярности ⌄</span>
+        <span>В наличии</span>
+      </div>
+
+      <div class="products-grid" id="catalog-grid"></div>
+    </div>
+
+    <div id="screen-detail" class="screen">
+      <div class="detail-topbar">
+        <button class="icon-circle-btn" onclick="switchScreen('catalog')">←</button>
+        <span style="font-weight: 700; font-size: 15px;">О товаре</span>
+        <div style="display:flex; gap:8px;">
+          <button class="icon-circle-btn" onclick="showToast('Ссылка скопирована')">↗</button>
+          <button class="icon-circle-btn" id="detail-fav-btn" onclick="toggleDetailFav()">♡</button>
+        </div>
+      </div>
+
+      <div id="detail-content"></div>
+    </div>
+
+    <div id="screen-cart" class="screen">
+      <div class="catalog-header">
+        <div class="page-title">Корзина</div>
+        <div class="items-count" id="cart-header-count">0 товаров</div>
+      </div>
+
+      <div id="cart-items-list"></div>
+
+      <div class="delivery-box" style="justify-content: space-between; cursor:pointer;" onclick="showToast('Доставка курьером завтра с 10:00 до 18:00')">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-size:20px;">🚚</span>
+          <div>
+            <div style="font-weight:700;">Доставка курьером</div>
+            <div style="color:var(--text-muted); font-size:11px;">Завтра • Бесплатно</div>
+          </div>
+        </div>
+        <span>›</span>
+      </div>
+
+      <div class="promo-input-wrap">
+        <input type="text" id="promo-input" placeholder="Есть промокод? (напр. OFFICE10)" />
+        <button class="btn-dark" onclick="applyPromo()">OK</button>
+      </div>
+
+      <div class="summary-card" id="cart-summary"></div>
+
+      <button class="btn-primary-full" style="justify-content: center;" onclick="checkoutOrder()">
+        Перейти к оформлению
+      </button>
+    </div>
+
+    <div id="screen-fav" class="screen">
+      <div class="catalog-header">
+        <div class="page-title">Избранное</div>
+        <div class="items-count" id="fav-count">0 товаров</div>
+      </div>
+      <div class="products-grid" id="fav-grid"></div>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <button class="nav-item active" data-screen="home" onclick="switchScreen('home')">
+      <span style="font-size:18px;">🏠</span>
+      <span>Главная</span>
+    </button>
+    <button class="nav-item" data-screen="catalog" onclick="switchScreen('catalog')">
+      <span style="font-size:18px;">⊞</span>
+      <span>Каталог</span>
+    </button>
+    <button class="nav-item" data-screen="fav" onclick="switchScreen('fav')">
+      <span style="font-size:18px;">♡</span>
+      <span>Избранное</span>
+    </button>
+    <button class="nav-item" data-screen="cart" onclick="switchScreen('cart')">
+      <span style="font-size:18px;">🛒</span>
+      <span>Корзина</span>
+      <span class="cart-badge" id="nav-cart-badge">2</span>
+    </button>
+    <button class="nav-item" onclick="showToast('Вы вошли как Гость')">
+      <span style="font-size:18px;">👤</span>
+      <span>Профиль</span>
+    </button>
+  </nav>
+
+  <div class="toast" id="toast">Товар добавлен в корзину</div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
